@@ -26,7 +26,7 @@
   .header-doc{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,175,55,.8);margin-top:2px;}
   .header-meta{text-align:right;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.45);line-height:1.8;}
   .header-meta strong{color:rgba(255,255,255,.75);display:block;font-size:12px;margin-bottom:2px;}
-  .notice{background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.04));border-bottom:1px solid rgba(212,175,55,.2);padding:10px 24px;font-size:12px;color:var(--text2);text-align:center;letter-spacing:.03em;}
+  .notice{background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.04));border-bottom:1px solid rgba(212,175,55,.2);padding:10px 24px;font-size:12px;color:var(--text2);text-align:center;}
   .content{max-width:780px;margin:0 auto;padding:24px;}
   .summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
   .summary-box{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);}
@@ -140,18 +140,15 @@ function parseCSV(txt){
   }
   return rows;
 }
-
 function extractName(raw){
   if(!raw)return'';
-  const s=raw.toString().trim().replace(/^[\[(]/,'').replace(/[\])]$/,'');
+  const s=raw.toString().trim().replace(/^[\[(]/,'').replace(/[\])]/,'');
   const idx=s.indexOf(',');
   if(idx===-1)return s.trim();
   return s.slice(idx+1).trim().replace(/^['"]/,'').replace(/['"]$/,'').trim()||s.trim();
 }
-
 function parseMoney(s){return parseFloat((s||'').replace(/[^0-9.-]/g,''))||0;}
 function parseNum(s){return parseFloat((s||'').replace(/[^0-9.-]/g,''))||0;}
-
 function parseDate(s){
   if(!s)return null;
   s=s.toString().trim();
@@ -160,25 +157,14 @@ function parseDate(s){
   if(/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)){const p=s.split('/');return new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));}
   return null;
 }
-
-function fmtDate(d){
-  if(!d)return'ETA unknown';
-  return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});
-}
-
-function fmtR(n){
-  if(n>=1e6)return'R '+(n/1e6).toFixed(2)+'M';
-  if(n>=1e3)return'R '+(n/1e3).toFixed(1)+'K';
-  return'R '+Math.round(n).toLocaleString();
-}
-
+function fmtDate(d){if(!d)return'ETA unknown';return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
+function fmtR(n){if(n>=1e6)return'R '+(n/1e6).toFixed(2)+'M';if(n>=1e3)return'R '+(n/1e3).toFixed(1)+'K';return'R '+Math.round(n).toLocaleString();}
 function togglePO(uid){
   const el=document.getElementById(uid);if(!el)return;
   el.classList.toggle('open');
   const arrow=document.getElementById('arrow_'+uid);
   if(arrow)arrow.textContent=el.classList.contains('open')?'▴ tap to close':'▾ tap to expand';
 }
-
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading-state"><div class="loader"></div>Loading purchase orders…</div>';
   ['sumPos','sumValue','sumOverdue'].forEach(id=>document.getElementById(id).textContent='—');
@@ -189,7 +175,7 @@ async function loadData(){
     const resp=await fetch(PO_URL+'&t='+Date.now());
     const text=await resp.text();
     const rows=parseCSV(text);
-    // A=PO num, B=Supplier "id, Name", C=Code, D=Product "[10011] Name", E=QtyOrdered, F=Qty, G=Received, H=Subtotal, I=Date Planned
+    // A=PO num, B=Supplier, C=Code, D=Product, E=QtyOrdered, F=QtyReceived, G=Subtotal, H=DatePlanned
     const lines=rows
       .filter(r=>r[0]&&parseNum(r[4])>0)
       .map(r=>{
@@ -200,16 +186,15 @@ async function loadData(){
         const code=cm?cm[1]:(r[2]||'').toString().trim();
         const productName=cm?cm[2].trim():rawD;
         const qtyOrdered=parseNum(r[4]);
-        const qtyReceived=parseNum(r[6]);
+        const qtyReceived=parseNum(r[5]);
         const qtyOutstanding=Math.max(0,qtyOrdered-qtyReceived);
-        const subtotal=parseMoney(r[7]);
-        const eta=parseDate((r[8]||'').toString().trim());
+        const subtotal=parseMoney(r[6]);
+        const eta=parseDate((r[7]||'').toString().trim());
         const daysToEta=eta?Math.round((eta-new Date())/86400000):null;
         const lineValue=qtyOrdered>0?(qtyOutstanding/qtyOrdered)*subtotal:0;
         return{poId,supplier,productName,code,qtyOutstanding,lineValue,eta,daysToEta};
       })
       .filter(l=>l.qtyOutstanding>0);
-
     const groupMap={};
     lines.forEach(l=>{if(!groupMap[l.poId])groupMap[l.poId]=[];groupMap[l.poId].push(l);});
     const groups=Object.entries(groupMap).sort(([,a],[,b])=>{
@@ -222,7 +207,6 @@ async function loadData(){
     document.getElementById('tableWrap').innerHTML=`<div class="empty-state">⚠️ Could not load data.<br><small>${e.message}</small></div>`;
   }
 }
-
 function render(groups,totalLines){
   const now=new Date();
   const dateStr=now.toLocaleDateString('en-ZA',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -236,7 +220,6 @@ function render(groups,totalLines){
   document.getElementById('sumOverdue').textContent=overdueCount;
   document.getElementById('poCount').textContent=`${groups.length} PO${groups.length!==1?'s':''} · ${totalLines} lines`;
   if(groups.length===0){document.getElementById('tableWrap').innerHTML='<div class="empty-state">No open purchase orders found.</div>';return;}
-
   const html=groups.map(([poId,ls])=>{
     const first=ls[0];
     const totalV=ls.reduce((s,l)=>s+l.lineValue,0);
