@@ -14,24 +14,35 @@
   .header{background:var(--navy);padding:0 24px;position:relative;overflow:hidden;}
   .header::before{content:'';position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(circle at top right,rgba(212,175,55,.12) 0%,transparent 60%);}
   .header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a6b3a,#d4af37,#b52a1c);opacity:.7;}
-  .header-inner{max-width:820px;margin:0 auto;padding:28px 0 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;position:relative;z-index:1;}
+  .header-inner{max-width:860px;margin:0 auto;padding:28px 0 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;position:relative;z-index:1;}
   .header-company{font-family:var(--head);font-size:20px;font-weight:700;color:#fff;}
   .header-doc{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(212,175,55,.8);margin-top:2px;}
   .header-meta{text-align:right;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.45);line-height:1.8;}
   .header-meta strong{color:rgba(255,255,255,.75);display:block;font-size:12px;margin-bottom:2px;}
   .notice{background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(212,175,55,.04));border-bottom:1px solid rgba(212,175,55,.2);padding:10px 24px;font-size:12px;color:var(--text2);text-align:center;}
-  .content{max-width:820px;margin:0 auto;padding:24px;}
+  .content{max-width:860px;margin:0 auto;padding:24px;}
   .summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
   .summary-box{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);}
   .summary-val{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--navy);line-height:1;margin-bottom:5px;}
-  .summary-val.gold{color:var(--gold);}.summary-val.red{color:var(--red);}
+  .summary-val.red{color:var(--red);}
   .summary-lbl{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);}
-  .currency-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-  .currency-box{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px 16px;box-shadow:var(--shadow);flex:1;min-width:120px;}
-  .currency-val{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--navy);}
-  .currency-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-top:3px;}
-  .filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-  .filter-select{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--body);font-size:12px;color:var(--navy);cursor:pointer;flex:1;min-width:140px;outline:none;}
+  .forex-panel{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .forex-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+  .forex-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .forex-card{background:var(--off);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+  .forex-card-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:10px;}
+  .forex-rate-live{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--navy);margin-bottom:2px;}
+  .forex-rate-label{font-size:10px;color:var(--text3);margin-bottom:10px;}
+  .forex-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .forex-lbl{font-size:11px;color:var(--text2);min-width:100px;}
+  .forex-input{font-family:var(--mono);font-size:12px;background:var(--white);border:1px solid #c4ccdf;border-radius:6px;padding:5px 8px;width:100%;outline:none;color:var(--navy);}
+  .forex-input:focus{border-color:var(--gold);}
+  .forex-total{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+  .forex-total-val{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--navy);}
+  .forex-total-lbl{font-size:10px;color:var(--text3);}
+  .forex-total-zar{font-family:var(--mono);font-size:13px;color:var(--green2);margin-top:2px;}
+  .filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .filter-select{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--body);font-size:12px;color:var(--navy);cursor:pointer;flex:1;min-width:130px;outline:none;}
   .filter-select:focus{border-color:var(--gold);}
   .btn-clear{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:var(--body);font-size:12px;color:var(--text2);cursor:pointer;}
   .btn-clear:hover{background:var(--border);}
@@ -46,14 +57,19 @@
   .po-left{flex:1;min-width:0;}
   .po-top-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;}
   .po-badge{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--gold);background:var(--gold-lt);border:1px solid rgba(184,150,46,.25);border-radius:5px;padding:3px 8px;white-space:nowrap;}
+  .po-curr{font-family:var(--mono);font-size:10px;font-weight:600;border-radius:4px;padding:2px 6px;}
+  .po-curr.eur{background:#e8f4fd;color:#1a6b9a;border:1px solid rgba(26,107,154,.2);}
+  .po-curr.usd{background:#eafaf1;color:#1a7a3a;border:1px solid rgba(26,122,58,.2);}
+  .po-curr.zar{background:var(--gold-lt);color:var(--gold);border:1px solid rgba(184,150,46,.2);}
   .po-lines{font-size:11px;font-weight:600;color:var(--text2);}
   .po-supplier{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;}
   .po-eta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .po-eta{font-family:var(--mono);font-size:11px;color:var(--text2);}
   .po-days{font-family:var(--mono);font-size:11px;font-weight:600;}
   .po-days.overdue{color:var(--red);}.po-days.today{color:var(--amber);}.po-days.soon{color:var(--green2);}.po-days.later{color:var(--text2);}
-  .po-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+  .po-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
   .po-value{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--navy);}
+  .po-zar{font-family:var(--mono);font-size:11px;color:var(--green2);}
   .po-qty{font-size:10px;color:var(--text3);}
   .po-expand{font-size:10px;color:var(--text3);margin-top:2px;}
   .po-products{display:none;background:var(--off);border-top:1px solid var(--border);padding:0 20px 8px;}
@@ -68,6 +84,7 @@
   .pl-eta{font-size:10px;color:var(--text3);}
   .pl-right{text-align:right;flex-shrink:0;}
   .pl-value{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--navy);}
+  .pl-zar{font-family:var(--mono);font-size:10px;color:var(--green2);}
   .pl-qty{font-size:10px;color:var(--text3);}
   .pill{font-size:10px;font-weight:600;border-radius:100px;padding:3px 9px;white-space:nowrap;display:inline-block;}
   .pill-green{background:var(--green-lt);color:var(--green);border:1px solid rgba(26,107,58,.2);}
@@ -76,15 +93,15 @@
   .loading-state{display:flex;align-items:center;justify-content:center;gap:14px;padding:60px 0;color:var(--text2);font-size:13px;}
   .loader{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;}
   .empty-state{text-align:center;padding:60px 20px;color:var(--text3);font-size:13px;}
-  .footer{max-width:820px;margin:0 auto;padding:0 24px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+  .footer{max-width:860px;margin:0 auto;padding:0 24px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
   .footer-note{font-size:11px;color:var(--text3);line-height:1.6;}
   .btn-refresh{background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:var(--body);font-size:12px;font-weight:600;padding:9px 18px;cursor:pointer;display:flex;align-items:center;gap:6px;}
   .btn-refresh:hover{background:var(--navy2);}
   @keyframes spin{to{transform:rotate(360deg);}}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   .fade-in{animation:fadeIn .35s ease;}
-  @media print{body{background:#fff;}.notice,.btn-refresh,.footer-note,.po-expand,.filters{display:none;}.po-products{display:block!important;}.card,.summary-box,.currency-box{box-shadow:none;border-color:#ccc;}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact;}}
-  @media(max-width:600px){.summary-row{grid-template-columns:repeat(2,1fr);}.header-inner{flex-direction:column;gap:12px;}.header-meta{text-align:left;}.content{padding:16px;}.footer{flex-direction:column;align-items:flex-start;}}
+  @media print{body{background:#fff;}.notice,.btn-refresh,.footer-note,.po-expand,.filters{display:none;}.po-products{display:block!important;}.card,.summary-box,.forex-panel{box-shadow:none;border-color:#ccc;}.header{print-color-adjust:exact;-webkit-print-color-adjust:exact;}}
+  @media(max-width:600px){.summary-row{grid-template-columns:repeat(2,1fr);}.forex-grid{grid-template-columns:1fr;}.header-inner{flex-direction:column;gap:12px;}.header-meta{text-align:left;}.content{padding:16px;}.footer{flex-direction:column;align-items:flex-start;}}
 </style>
 </head>
 <body>
@@ -104,15 +121,45 @@
     <div class="summary-box"><div class="summary-val red" id="sumOverdue">—</div><div class="summary-lbl">Overdue</div></div>
     <div class="summary-box"><div class="summary-val" id="sumLines">—</div><div class="summary-lbl">Total Lines</div></div>
   </div>
-  <div class="currency-row" id="currencyRow"></div>
+  <div class="forex-panel">
+    <div class="forex-title">💱 Foreign Exchange</div>
+    <div class="forex-grid">
+      <div class="forex-card">
+        <div class="forex-card-title">🇪🇺 EUR / ZAR</div>
+        <div class="forex-rate-live" id="eurLive">Loading…</div>
+        <div class="forex-rate-label" id="eurLiveLabel">Live rate</div>
+        <div class="forex-row"><span class="forex-lbl">Forward rate</span><input class="forex-input" id="eurForward" type="number" step="0.01" placeholder="e.g. 20.50" oninput="updateAll()"></div>
+        <div class="forex-row"><span class="forex-lbl">Payment date</span><input class="forex-input" id="eurPayDate" type="date" oninput="updateAll()"></div>
+        <div class="forex-total">
+          <div class="forex-total-val" id="eurTotal">—</div>
+          <div class="forex-total-lbl">Total EUR outstanding</div>
+          <div class="forex-total-zar" id="eurTotalZar">— ZAR equivalent</div>
+        </div>
+      </div>
+      <div class="forex-card">
+        <div class="forex-card-title">🇺🇸 USD / ZAR</div>
+        <div class="forex-rate-live" id="usdLive">Loading…</div>
+        <div class="forex-rate-label" id="usdLiveLabel">Live rate</div>
+        <div class="forex-row"><span class="forex-lbl">Forward rate</span><input class="forex-input" id="usdForward" type="number" step="0.01" placeholder="e.g. 18.20" oninput="updateAll()"></div>
+        <div class="forex-row"><span class="forex-lbl">Payment date</span><input class="forex-input" id="usdPayDate" type="date" oninput="updateAll()"></div>
+        <div class="forex-total">
+          <div class="forex-total-val" id="usdTotal">—</div>
+          <div class="forex-total-lbl">Total USD outstanding</div>
+          <div class="forex-total-zar" id="usdTotalZar">— ZAR equivalent</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="filters">
-    <select class="filter-select" id="filterMonth" onchange="applyFilters()">
-      <option value="">All Months</option>
+    <select class="filter-select" id="filterCurrency" onchange="applyFilters()">
+      <option value="">All Currencies</option>
+      <option value="€">EUR only</option>
+      <option value="$">USD only</option>
+      <option value="R">ZAR only</option>
     </select>
-    <select class="filter-select" id="filterSupplier" onchange="applyFilters()">
-      <option value="">All Suppliers</option>
-    </select>
-    <button class="btn-clear" onclick="clearFilters()">Clear filters</button>
+    <select class="filter-select" id="filterMonth" onchange="applyFilters()"><option value="">All Months</option></select>
+    <select class="filter-select" id="filterSupplier" onchange="applyFilters()"><option value="">All Suppliers</option></select>
+    <button class="btn-clear" onclick="clearFilters()">✕ Clear</button>
   </div>
   <div class="card">
     <div class="card-header">
@@ -129,28 +176,26 @@
 <script>
 const SHEET_ID='2PACX-1vTM3RGvAzvyfYXO0XMYHD2AqHl9tY32mEPXEkqDZwVNeArhVNnLp2du0YF-2WpN9SPqT21B3Q0455xJ';
 const PO_URL=`https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=1996828404&single=true&output=csv`;
-let allGroups=[];
+let allGroups=[],liveRates={EUR:0,USD:0},currTotals={};
 
 function getCurrency(supplier){
   if(!supplier)return'R';
   const s=supplier.toUpperCase();
-  if(s.includes('ECOFROST')||s.includes('PASFROST')||s.includes('SOCIETE')||
-     s.includes('MASFROST')||s.includes('NOVI')||s.includes('ORIGINIA')||
-     s.includes('ORIGANIA'))return'€';
-  if(s.includes('PRISMA')||s.includes('PRISM')||s.includes('BLUE OCEAN')||
-     s.includes('BON FOOD'))return'$';
+  if(s.includes('ECOFROST')||s.includes('PASFROST')||s.includes('SOCIETE')||s.includes('MASFROST')||s.includes('NOVI')||s.includes('ORIGINIA')||s.includes('ORIGANIA'))return'€';
+  if(s.includes('PRISMA')||s.includes('PRISM')||s.includes('BLUE OCEAN')||s.includes('BON FOOD'))return'$';
   return'R';
+}
+function getEffectiveRate(curr){
+  if(curr==='€'){const f=parseFloat(document.getElementById('eurForward').value);return f>0?f:liveRates.EUR;}
+  if(curr==='$'){const f=parseFloat(document.getElementById('usdForward').value);return f>0?f:liveRates.USD;}
+  return 1;
 }
 function parseCSV(txt){
   const rows=[];const lines=txt.split('\n');
   for(let i=1;i<lines.length;i++){
     const line=lines[i].trim();if(!line)continue;
     const cols=[];let cur='',inQ=false;
-    for(let c=0;c<line.length;c++){
-      if(line[c]==='"'){inQ=!inQ;}
-      else if(line[c]===','&&!inQ){cols.push(cur.trim());cur='';}
-      else{cur+=line[c];}
-    }
+    for(let c=0;c<line.length;c++){if(line[c]==='"'){inQ=!inQ;}else if(line[c]===','&&!inQ){cols.push(cur.trim());cur='';}else{cur+=line[c];}}
     cols.push(cur.trim());rows.push(cols);
   }
   return rows;
@@ -174,43 +219,63 @@ function parseDate(s){
 }
 function fmtDate(d){if(!d)return'ETA unknown';return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
 function fmtNum(n,c=''){if(n>=1e6)return c+(n/1e6).toFixed(2)+'M';if(n>=1e3)return c+(n/1e3).toFixed(1)+'K';return c+Math.round(n).toLocaleString();}
+function fmtR(n){return'R '+n.toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0});}
 function getMonthKey(d){if(!d)return'';return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
 function getMonthLabel(k){if(!k)return'';const[y,m]=k.split('-');return new Date(parseInt(y),parseInt(m)-1,1).toLocaleDateString('en-ZA',{month:'long',year:'numeric'});}
-
 function togglePO(uid){
   const el=document.getElementById(uid);if(!el)return;
   el.classList.toggle('open');
   const arrow=document.getElementById('arrow_'+uid);
   if(arrow)arrow.textContent=el.classList.contains('open')?'▴ tap to close':'▾ tap to expand';
 }
-
 function clearFilters(){
+  document.getElementById('filterCurrency').value='';
   document.getElementById('filterMonth').value='';
   document.getElementById('filterSupplier').value='';
   applyFilters();
 }
+function updateForexPanel(){
+  const eurTotal=currTotals['€']||0;
+  const eurRate=getEffectiveRate('€');
+  const eurPayDate=document.getElementById('eurPayDate').value;
+  document.getElementById('eurTotal').textContent=fmtNum(eurTotal,'€');
+  document.getElementById('eurLive').textContent=liveRates.EUR>0?liveRates.EUR.toFixed(4):'—';
+  document.getElementById('eurLiveLabel').textContent=liveRates.EUR>0?'Live mid-market rate':'Could not load live rate';
+  document.getElementById('eurTotalZar').textContent=eurRate>0?`≈ ${fmtR(eurTotal*eurRate)} @ ${eurRate.toFixed(2)}${eurPayDate?' · Pay '+new Date(eurPayDate).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}):''}`:' Set a rate above';
 
+  const usdTotal=currTotals['$']||0;
+  const usdRate=getEffectiveRate('$');
+  const usdPayDate=document.getElementById('usdPayDate').value;
+  document.getElementById('usdTotal').textContent=fmtNum(usdTotal,'$');
+  document.getElementById('usdLive').textContent=liveRates.USD>0?liveRates.USD.toFixed(4):'—';
+  document.getElementById('usdLiveLabel').textContent=liveRates.USD>0?'Live mid-market rate':'Could not load live rate';
+  document.getElementById('usdTotalZar').textContent=usdRate>0?`≈ ${fmtR(usdTotal*usdRate)} @ ${usdRate.toFixed(2)}${usdPayDate?' · Pay '+new Date(usdPayDate).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}):''}`:' Set a rate above';
+}
+function updateAll(){updateForexPanel();applyFilters();}
 function applyFilters(){
+  const currency=document.getElementById('filterCurrency').value;
   const month=document.getElementById('filterMonth').value;
   const supplier=document.getElementById('filterSupplier').value;
   const filtered=allGroups.filter(([,ls])=>{
     if(supplier&&ls[0].supplier!==supplier)return false;
-    if(month){
-      const hasMonth=ls.some(l=>l.eta&&getMonthKey(l.eta)===month);
-      if(!hasMonth)return false;
-    }
+    if(currency&&ls[0].currency!==currency)return false;
+    if(month){const hasMonth=ls.some(l=>l.eta&&getMonthKey(l.eta)===month);if(!hasMonth)return false;}
     return true;
   });
   renderGroups(filtered);
 }
-
+async function fetchRates(){
+  try{const r=await fetch('https://api.frankfurter.app/latest?from=EUR&to=ZAR');const d=await r.json();liveRates.EUR=d.rates.ZAR||0;}catch(e){liveRates.EUR=0;}
+  try{const r=await fetch('https://api.frankfurter.app/latest?from=USD&to=ZAR');const d=await r.json();liveRates.USD=d.rates.ZAR||0;}catch(e){liveRates.USD=0;}
+  updateForexPanel();
+}
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading-state"><div class="loader"></div>Loading purchase orders…</div>';
   ['sumPos','sumOverdue','sumLines'].forEach(id=>document.getElementById(id).textContent='—');
   document.getElementById('poCount').textContent='';
-  document.getElementById('currencyRow').innerHTML='';
   document.getElementById('footerNote').textContent='';
   document.getElementById('headerMeta').innerHTML='<strong>Loading…</strong>';
+  fetchRates();
   try{
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),15000);
@@ -238,7 +303,6 @@ async function loadData(){
         return{poId,supplier,productName,code,qtyOutstanding,lineValue,eta,daysToEta,currency};
       })
       .filter(l=>l.qtyOutstanding>0);
-
     const groupMap={};
     lines.forEach(l=>{if(!groupMap[l.poId])groupMap[l.poId]=[];groupMap[l.poId].push(l);});
     allGroups=Object.entries(groupMap).sort(([,a],[,b])=>{
@@ -246,26 +310,12 @@ async function loadData(){
       const eb=Math.min(...b.map(l=>l.daysToEta??9999));
       return ea-eb;
     });
-
-    // Populate filters
+    currTotals={};
+    lines.forEach(l=>{currTotals[l.currency]=(currTotals[l.currency]||0)+l.lineValue;});
     const months=[...new Set(lines.map(l=>l.eta?getMonthKey(l.eta):null).filter(Boolean))].sort();
     const suppliers=[...new Set(lines.map(l=>l.supplier).filter(Boolean))].sort();
-    const mSel=document.getElementById('filterMonth');
-    const sSel=document.getElementById('filterSupplier');
-    mSel.innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${getMonthLabel(m)}</option>`).join('');
-    sSel.innerHTML='<option value="">All Suppliers</option>'+suppliers.map(s=>`<option value="${s}">${s}</option>`).join('');
-
-    // Currency totals
-    const currTotals={};
-    lines.forEach(l=>{currTotals[l.currency]=(currTotals[l.currency]||0)+l.lineValue;});
-    const currRow=document.getElementById('currencyRow');
-    currRow.innerHTML=Object.entries(currTotals).sort().map(([c,v])=>`
-      <div class="currency-box">
-        <div class="currency-val">${fmtNum(v,c)}</div>
-        <div class="currency-lbl">Total ${c==='€'?'EUR':c==='$'?'USD':'ZAR'}</div>
-      </div>`).join('');
-
-    // Summary
+    document.getElementById('filterMonth').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${getMonthLabel(m)}</option>`).join('');
+    document.getElementById('filterSupplier').innerHTML='<option value="">All Suppliers</option>'+suppliers.map(s=>`<option value="${s}">${s}</option>`).join('');
     const now=new Date();
     const dateStr=now.toLocaleDateString('en-ZA',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     const timeStr=now.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
@@ -274,22 +324,23 @@ async function loadData(){
     document.getElementById('sumPos').textContent=allGroups.length;
     document.getElementById('sumOverdue').textContent=allGroups.filter(([,ls])=>ls.some(l=>l.daysToEta!==null&&l.daysToEta<0)).length;
     document.getElementById('sumLines').textContent=lines.length;
-
+    updateForexPanel();
     applyFilters();
   }catch(e){
     const msg=e.name==='AbortError'?'Request timed out — please try refreshing.':e.message;
     document.getElementById('tableWrap').innerHTML=`<div class="empty-state">⚠️ Could not load data.<br><small>${msg}</small></div>`;
   }
 }
-
 function renderGroups(groups){
   document.getElementById('poCount').textContent=`${groups.length} PO${groups.length!==1?'s':''}`;
   if(groups.length===0){document.getElementById('tableWrap').innerHTML='<div class="empty-state">No purchase orders match the selected filters.</div>';return;}
   const html=groups.map(([poId,ls])=>{
     const first=ls[0];
     const curr=first.currency||'R';
+    const rate=getEffectiveRate(curr);
     const totalV=ls.reduce((s,l)=>s+l.lineValue,0);
     const totalQ=ls.reduce((s,l)=>s+l.qtyOutstanding,0);
+    const totalZar=curr!=='R'&&rate>0?totalV*rate:0;
     const minDays=ls.reduce((m,l)=>l.daysToEta!==null?Math.min(m,l.daysToEta):m,9999);
     const daysToEta=minDays===9999?null:minDays;
     const etaLine=ls.find(l=>l.daysToEta===daysToEta)||first;
@@ -302,9 +353,12 @@ function renderGroups(groups){
       else{daysClass='later';daysLabel=daysToEta+'d to arrival';}
     }
     const pill=daysToEta===null?'<span class="pill pill-amber">No ETA</span>':daysToEta<0?'<span class="pill pill-red">Overdue</span>':daysToEta<=14?'<span class="pill pill-green">Arriving soon</span>':'<span class="pill pill-amber">Pending</span>';
+    const currClass=curr==='€'?'eur':curr==='$'?'usd':'zar';
+    const currLabel=curr==='€'?'EUR':curr==='$'?'USD':'ZAR';
     const uid='po_'+poId.replace(/[^a-zA-Z0-9]/g,'_');
-    const productLines=ls.map(l=>`
-      <div class="product-line">
+    const productLines=ls.map(l=>{
+      const lZar=curr!=='R'&&rate>0?l.lineValue*rate:0;
+      return`<div class="product-line">
         <div class="pl-left">
           <div class="pl-name">${l.productName||'—'}</div>
           <div class="pl-meta">
@@ -314,18 +368,21 @@ function renderGroups(groups){
         </div>
         <div class="pl-right">
           <div class="pl-value">${fmtNum(l.lineValue,curr)}</div>
+          ${lZar>0?`<div class="pl-zar">≈ ${fmtR(lZar)}</div>`:''}
           <div class="pl-qty">${Math.round(l.qtyOutstanding).toLocaleString()} cases</div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     return`<div class="po-group">
       <div class="po-header" onclick="togglePO('${uid}')">
         <div class="po-left">
-          <div class="po-top-row"><span class="po-badge">${poId}</span><span class="po-lines">${ls.length} line${ls.length!==1?'s':''}</span>${pill}</div>
+          <div class="po-top-row"><span class="po-badge">${poId}</span><span class="po-curr ${currClass}">${currLabel}</span><span class="po-lines">${ls.length} line${ls.length!==1?'s':''}</span>${pill}</div>
           <div class="po-supplier">${first.supplier||'—'}</div>
           <div class="po-eta-row"><span class="po-eta">📅 ${etaStr}</span><span class="po-days ${daysClass}">${daysLabel}</span></div>
         </div>
         <div class="po-right">
           <div class="po-value">${fmtNum(totalV,curr)}</div>
+          ${totalZar>0?`<div class="po-zar">≈ ${fmtR(totalZar)}</div>`:''}
           <div class="po-qty">${Math.round(totalQ).toLocaleString()} cases</div>
           <div class="po-expand" id="arrow_${uid}">▾ tap to expand</div>
         </div>
