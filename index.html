@@ -110,6 +110,7 @@
 <script>
 const SHEET_ID='2PACX-1vTM3RGvAzvyfYXO0XMYHD2AqHl9tY32mEPXEkqDZwVNeArhVNnLp2du0YF-2WpN9SPqT21B3Q0455xJ';
 const PO_URL=`https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=1996828404&single=true&output=csv`;
+
 function parseCSV(txt){
   const rows=[];const lines=txt.split('\n');
   for(let i=1;i<lines.length;i++){
@@ -149,6 +150,7 @@ function togglePO(uid){
   const arrow=document.getElementById('arrow_'+uid);
   if(arrow)arrow.textContent=el.classList.contains('open')?'▴ tap to close':'▾ tap to expand';
 }
+
 async function loadData(){
   document.getElementById('tableWrap').innerHTML='<div class="loading-state"><div class="loader"></div>Loading purchase orders…</div>';
   ['sumPos','sumValue','sumOverdue'].forEach(id=>document.getElementById(id).textContent='—');
@@ -156,15 +158,15 @@ async function loadData(){
   document.getElementById('footerNote').textContent='';
   document.getElementById('headerMeta').innerHTML='<strong>Loading…</strong>';
   try{
-    const resp=await fetch(PO_URL+'&t='+Date.now());
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),15000);
+    const resp=await fetch(PO_URL+'&t='+Date.now(),{signal:controller.signal});
+    clearTimeout(timer);
     const text=await resp.text();
     const rows=parseCSV(text);
     const lines=rows
       .filter(r=>r[0]&&parseNum(r[4])>0)
       .map(r=>{
-        // A=r[0] PO num, B=r[1] Supplier, C=r[2] Code, D=r[3] Product
-        // E=r[4] QtyOrdered, F=r[5] Qty, G=r[6] Received
-        // H=r[7] Subtotal, I=r[8] Date, J=r[9] PO name (order_id)
         const poId=extractName(r[9])||(r[0]||'').toString().trim();
         const supplier=extractName(r[1]);
         const rawD=(r[3]||'').toString().trim();
@@ -174,8 +176,8 @@ async function loadData(){
         const qtyOrdered=parseNum(r[4]);
         const qtyReceived=parseNum(r[5]);
         const qtyOutstanding=Math.max(0,qtyOrdered-qtyReceived);
-        const subtotal=parseMoney(r[6]); // col G = subtotal
-        const eta=parseDate((r[7]||'').toString().trim()); // col H = date
+        const subtotal=parseMoney(r[6]);
+        const eta=parseDate((r[7]||'').toString().trim());
         const daysToEta=eta?Math.round((eta-new Date())/86400000):null;
         const lineValue=qtyOrdered>0?(qtyOutstanding/qtyOrdered)*subtotal:0;
         return{poId,supplier,productName,code,qtyOutstanding,lineValue,eta,daysToEta};
@@ -190,9 +192,11 @@ async function loadData(){
     });
     render(groups,lines.length);
   }catch(e){
-    document.getElementById('tableWrap').innerHTML=`<div class="empty-state">⚠️ Could not load data.<br><small>${e.message}</small></div>`;
+    const msg=e.name==='AbortError'?'Request timed out — please try refreshing.':e.message;
+    document.getElementById('tableWrap').innerHTML=`<div class="empty-state">⚠️ Could not load data.<br><small>${msg}</small></div>`;
   }
 }
+
 function render(groups,totalLines){
   const now=new Date();
   const dateStr=now.toLocaleDateString('en-ZA',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -200,4 +204,65 @@ function render(groups,totalLines){
   document.getElementById('headerMeta').innerHTML=`<strong>Generated ${dateStr}</strong>at ${timeStr}`;
   document.getElementById('footerNote').innerHTML=`Data sourced live from purchasing system.<br>Generated ${dateStr} at ${timeStr}.`;
   const totalVal=groups.reduce((s,[,ls])=>s+ls.reduce((a,l)=>a+l.lineValue,0),0);
-  const o
+  const overdueCount=groups.filter(([,ls])=>ls.some(l=>l.daysToEta!==null&&l.daysToEta<0)).length;
+  document.getElementById('sumPos').textContent=groups.length;
+  document.getElementById('sumValue').textContent=fmtNum(totalVal);
+  document.getElementById('sumOverdue').textContent=overdueCount;
+  document.getElementById('poCount').textContent=`${groups.length} PO${groups.length!==1?'s':''} · ${totalLines} lines`;
+  if(groups.length===0){document.getElementById('tableWrap').innerHTML='<div class="empty-state">No open purchase orders found.</div>';return;}
+  const html=groups.map(([poId,ls])=>{
+    const first=ls[0];
+    const totalV=ls.reduce((s,l)=>s+l.lineValue,0);
+    const totalQ=ls.reduce((s,l)=>s+l.qtyOutstanding,0);
+    const minDays=ls.reduce((m,l)=>l.daysToEta!==null?Math.min(m,l.daysToEta):m,9999);
+    const daysToEta=minDays===9999?null:minDays;
+    const etaLine=ls.find(l=>l.daysToEta===daysToEta)||first;
+    const etaStr=fmtDate(etaLine.eta);
+    let daysClass='later',daysLabel='—';
+    if(daysToEta!==null){
+      if(daysToEta<0){daysClass='overdue';daysLabel=Math.abs(daysToEta)+'d OVERDUE';}
+      else if(daysToEta===0){daysClass='today';daysLabel='Due today';}
+      else if(daysToEta<=21){daysClass='soon';daysLabel=daysToEta+'d to arrival';}
+      else{daysClass='later';daysLabel=daysToEta+'d to arrival';}
+    }
+    const pill=daysToEta===null?'<span class="pill pill-amber">No ETA</span>':daysToEta<0?'<span class="pill pill-red">Overdue</span>':daysToEta<=14?'<span class="pill pill-green">Arriving soon</span>':'<span class="pill pill-amber">Pending</span>';
+    const uid='po_'+poId.replace(/[^a-zA-Z0-9]/g,'_');
+    const productLines=ls.map(l=>`
+      <div class="product-line">
+        <div class="pl-left">
+          <div class="pl-name">${l.productName||'—'}</div>
+          <div class="pl-meta">
+            ${l.code?`<span class="pl-code">${l.code}</span>`:''}
+            <span class="pl-eta">📅 ${fmtDate(l.eta)}</span>
+          </div>
+        </div>
+        <div class="pl-right">
+          <div class="pl-value">${fmtNum(l.lineValue)}</div>
+          <div class="pl-qty">${Math.round(l.qtyOutstanding).toLocaleString()} cases</div>
+        </div>
+      </div>`).join('');
+    return`<div class="po-group">
+      <div class="po-header" onclick="togglePO('${uid}')">
+        <div class="po-left">
+          <div class="po-top-row"><span class="po-badge">${poId}</span><span class="po-lines">${ls.length} line${ls.length!==1?'s':''}</span>${pill}</div>
+          <div class="po-supplier">${first.supplier||'—'}</div>
+          <div class="po-eta-row"><span class="po-eta">📅 ${etaStr}</span><span class="po-days ${daysClass}">${daysLabel}</span></div>
+        </div>
+        <div class="po-right">
+          <div class="po-value">${fmtNum(totalV)}</div>
+          <div class="po-qty">${Math.round(totalQ).toLocaleString()} cases</div>
+          <div class="po-expand" id="arrow_${uid}">▾ tap to expand</div>
+        </div>
+      </div>
+      <div class="po-products" id="${uid}">
+        <div class="products-label">Products on this PO</div>
+        ${productLines}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('tableWrap').innerHTML=`<div class="fade-in">${html}</div>`;
+}
+loadData();
+</script>
+</body>
+</html>
