@@ -133,7 +133,7 @@
         <div class="forex-total">
           <div class="forex-total-val" id="eurTotal">—</div>
           <div class="forex-total-lbl">Total EUR outstanding</div>
-          <div class="forex-total-zar" id="eurTotalZar">— ZAR equivalent</div>
+          <div class="forex-total-zar" id="eurTotalZar">—</div>
         </div>
       </div>
       <div class="forex-card">
@@ -145,7 +145,7 @@
         <div class="forex-total">
           <div class="forex-total-val" id="usdTotal">—</div>
           <div class="forex-total-lbl">Total USD outstanding</div>
-          <div class="forex-total-zar" id="usdTotalZar">— ZAR equivalent</div>
+          <div class="forex-total-zar" id="usdTotalZar">—</div>
         </div>
       </div>
     </div>
@@ -202,10 +202,12 @@ function parseCSV(txt){
 }
 function extractName(raw){
   if(!raw)return'';
-  const s=raw.toString().trim().replace(/^[\[(]/,'').replace(/[\])]/,'');
-  const idx=s.indexOf(',');
-  if(idx===-1)return s.trim();
-  return s.slice(idx+1).trim().replace(/^['"]/,'').replace(/['"]$/,'').trim()||s.trim();
+  const s=raw.toString().trim();
+  const clean=s.replace(/^[\[(]/,'').replace(/[\])]/,'');
+  const idx=clean.indexOf(',');
+  if(idx===-1)return clean.trim();
+  const after=clean.slice(idx+1).trim().replace(/^['"]/,'').replace(/['"]$/,'').trim();
+  return after||clean.trim();
 }
 function parseMoney(s){return parseFloat((s||'').replace(/[^0-9.-]/g,''))||0;}
 function parseNum(s){return parseFloat((s||'').replace(/[^0-9.-]/g,''))||0;}
@@ -242,7 +244,6 @@ function updateForexPanel(){
   document.getElementById('eurLive').textContent=liveRates.EUR>0?liveRates.EUR.toFixed(4):'—';
   document.getElementById('eurLiveLabel').textContent=liveRates.EUR>0?'Live mid-market rate':'Could not load live rate';
   document.getElementById('eurTotalZar').textContent=eurRate>0?`≈ ${fmtR(eurTotal*eurRate)} @ ${eurRate.toFixed(2)}${eurPayDate?' · Pay '+new Date(eurPayDate).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}):''}`:' Set a rate above';
-
   const usdTotal=currTotals['$']||0;
   const usdRate=getEffectiveRate('$');
   const usdPayDate=document.getElementById('usdPayDate').value;
@@ -265,8 +266,8 @@ function applyFilters(){
   renderGroups(filtered);
 }
 async function fetchRates(){
-  try{const r=await fetch('https://api.frankfurter.app/latest?from=EUR&to=ZAR');const d=await r.json();liveRates.EUR=d.rates.ZAR||0;}catch(e){liveRates.EUR=0;}
-  try{const r=await fetch('https://api.frankfurter.app/latest?from=USD&to=ZAR');const d=await r.json();liveRates.USD=d.rates.ZAR||0;}catch(e){liveRates.USD=0;}
+  try{const r=await fetch('https://open.er-api.com/v6/latest/EUR');const d=await r.json();if(d.rates&&d.rates.ZAR)liveRates.EUR=d.rates.ZAR;}catch(e){liveRates.EUR=0;}
+  try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const d=await r.json();if(d.rates&&d.rates.ZAR)liveRates.USD=d.rates.ZAR;}catch(e){liveRates.USD=0;}
   updateForexPanel();
 }
 async function loadData(){
