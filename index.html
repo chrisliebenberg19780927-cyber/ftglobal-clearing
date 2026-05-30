@@ -149,7 +149,11 @@ function parseDate(s){
   return null;
 }
 function fmtDate(d){if(!d)return'ETA unknown';return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
-function fmtR(n){if(n>=1e6)return'R '+(n/1e6).toFixed(2)+'M';if(n>=1e3)return'R '+(n/1e3).toFixed(1)+'K';return'R '+Math.round(n).toLocaleString();}
+function fmtNum(n){
+  if(n>=1e6)return(n/1e6).toFixed(2)+'M';
+  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
+  return Math.round(n).toLocaleString();
+}
 function togglePO(uid){
   const el=document.getElementById(uid);if(!el)return;
   el.classList.toggle('open');
@@ -206,7 +210,7 @@ function render(groups,totalLines){
   const totalVal=groups.reduce((s,[,ls])=>s+ls.reduce((a,l)=>a+l.lineValue,0),0);
   const overdueCount=groups.filter(([,ls])=>ls.some(l=>l.daysToEta!==null&&l.daysToEta<0)).length;
   document.getElementById('sumPos').textContent=groups.length;
-  document.getElementById('sumValue').textContent=fmtR(totalVal);
+  document.getElementById('sumValue').textContent=fmtNum(totalVal);
   document.getElementById('sumOverdue').textContent=overdueCount;
   document.getElementById('poCount').textContent=`${groups.length} PO${groups.length!==1?'s':''} · ${totalLines} lines`;
   if(groups.length===0){document.getElementById('tableWrap').innerHTML='<div class="empty-state">No open purchase orders found.</div>';return;}
@@ -237,7 +241,7 @@ function render(groups,totalLines){
           </div>
         </div>
         <div class="pl-right">
-          <div class="pl-value">${fmtR(l.lineValue)}</div>
+          <div class="pl-value">${fmtNum(l.lineValue)}</div>
           <div class="pl-qty">${Math.round(l.qtyOutstanding).toLocaleString()} cases</div>
         </div>
       </div>`).join('');
@@ -249,7 +253,7 @@ function render(groups,totalLines){
           <div class="po-eta-row"><span class="po-eta">📅 ${etaStr}</span><span class="po-days ${daysClass}">${daysLabel}</span></div>
         </div>
         <div class="po-right">
-          <div class="po-value">${fmtR(totalV)}</div>
+          <div class="po-value">${fmtNum(totalV)}</div>
           <div class="po-qty">${Math.round(totalQ).toLocaleString()} cases</div>
           <div class="po-expand" id="arrow_${uid}">▾ tap to expand</div>
         </div>
