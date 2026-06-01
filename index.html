@@ -8,7 +8,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#1a2540;--navy2:#253050;--gold:#b8962e;--gold-lt:#fdf6e3;--off:#f4f6fa;--border:#dde2ee;--text:#1a2540;--text2:#5a6680;--text3:#9aa0b4;--white:#ffffff;--green:#1a7a3a;--green2:#27ae60;--green-lt:#eaf7ee;--amber:#d4820a;--amber-lt:#fef5e7;--red:#c0392b;--red-lt:#fdf0ef;--shadow:0 1px 3px rgba(26,37,64,0.07),0 4px 16px rgba(26,37,64,0.07);--mono:'DM Mono',monospace;--head:'Playfair Display',serif;--body:'Inter',sans-serif;}
+  :root {
+    --navy:#1a2540;--navy2:#253050;--gold:#b8962e;--gold-lt:#fdf6e3;
+    --off:#f4f6fa;--border:#dde2ee;--text:#1a2540;--text2:#5a6680;--text3:#9aa0b4;
+    --white:#ffffff;--green:#1a7a3a;--green2:#27ae60;--green-lt:#eaf7ee;
+    --amber:#d4820a;--amber-lt:#fef5e7;--red:#c0392b;--red-lt:#fdf0ef;
+    --shadow:0 1px 3px rgba(26,37,64,0.07),0 4px 16px rgba(26,37,64,0.07);
+    --mono:'DM Mono',monospace;--head:'Playfair Display',serif;--body:'Inter',sans-serif;
+  }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--off);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.5;min-height:100vh;}
   .header{background:var(--navy);padding:0 24px;position:relative;overflow:hidden;}
@@ -92,7 +99,7 @@
 <div class="content">
   <div class="summary-row">
     <div class="summary-box"><div class="summary-val" id="sumPos">—</div><div class="summary-lbl">Open POs</div></div>
-    <div class="summary-box"><div class="summary-val gold" id="sumValue">—</div><div class="summary-lbl">Total Order Value (mixed currencies)</div></div>
+    <div class="summary-box"><div class="summary-val gold" id="sumValue">—</div><div class="summary-lbl">Total Order Value</div></div>
     <div class="summary-box"><div class="summary-val red" id="sumOverdue">—</div><div class="summary-lbl">Overdue</div></div>
   </div>
   <div class="card">
@@ -110,17 +117,6 @@
 <script>
 const SHEET_ID='2PACX-1vTM3RGvAzvyfYXO0XMYHD2AqHl9tY32mEPXEkqDZwVNeArhVNnLp2du0YF-2WpN9SPqT21B3Q0455xJ';
 const PO_URL=`https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=1996828404&single=true&output=csv`;
-
-function getCurrency(supplier){
-  if(!supplier)return'';
-  const s=supplier.toUpperCase();
-  if(s.includes('ECOFROST')||s.includes('PASFROST')||s.includes('SOCIETE')||
-     s.includes('MASFROST')||s.includes('NOVI')||s.includes('ORIGINIA')||
-     s.includes('ORIGANIA'))return'€';
-  if(s.includes('PRISMA')||s.includes('PRISM')||s.includes('BLUE OCEAN')||
-     s.includes('BON FOOD'))return'$';
-  return'R';
-}
 function parseCSV(txt){
   const rows=[];const lines=txt.split('\n');
   for(let i=1;i<lines.length;i++){
@@ -153,7 +149,7 @@ function parseDate(s){
   return null;
 }
 function fmtDate(d){if(!d)return'ETA unknown';return d.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});}
-function fmtNum(n,c=''){if(n>=1e6)return c+(n/1e6).toFixed(2)+'M';if(n>=1e3)return c+(n/1e3).toFixed(1)+'K';return c+Math.round(n).toLocaleString();}
+function fmtR(n){if(n>=1e6)return'R '+(n/1e6).toFixed(2)+'M';if(n>=1e3)return'R '+(n/1e3).toFixed(1)+'K';return'R '+Math.round(n).toLocaleString();}
 function togglePO(uid){
   const el=document.getElementById(uid);if(!el)return;
   el.classList.toggle('open');
@@ -167,10 +163,7 @@ async function loadData(){
   document.getElementById('footerNote').textContent='';
   document.getElementById('headerMeta').innerHTML='<strong>Loading…</strong>';
   try{
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),15000);
-    const resp=await fetch(PO_URL+'&t='+Date.now(),{signal:controller.signal});
-    clearTimeout(timer);
+    const resp=await fetch(PO_URL+'&t='+Date.now());
     const text=await resp.text();
     const rows=parseCSV(text);
     const lines=rows
@@ -201,8 +194,7 @@ async function loadData(){
     });
     render(groups,lines.length);
   }catch(e){
-    const msg=e.name==='AbortError'?'Request timed out — please try refreshing.':e.message;
-    document.getElementById('tableWrap').innerHTML=`<div class="empty-state">⚠️ Could not load data.<br><small>${msg}</small></div>`;
+    document.getElementById('tableWrap').innerHTML=`<div class="empty-state">⚠️ Could not load data.<br><small>${e.message}</small></div>`;
   }
 }
 function render(groups,totalLines){
@@ -214,13 +206,12 @@ function render(groups,totalLines){
   const totalVal=groups.reduce((s,[,ls])=>s+ls.reduce((a,l)=>a+l.lineValue,0),0);
   const overdueCount=groups.filter(([,ls])=>ls.some(l=>l.daysToEta!==null&&l.daysToEta<0)).length;
   document.getElementById('sumPos').textContent=groups.length;
-  document.getElementById('sumValue').textContent=fmtNum(totalVal);
+  document.getElementById('sumValue').textContent=fmtR(totalVal);
   document.getElementById('sumOverdue').textContent=overdueCount;
   document.getElementById('poCount').textContent=`${groups.length} PO${groups.length!==1?'s':''} · ${totalLines} lines`;
   if(groups.length===0){document.getElementById('tableWrap').innerHTML='<div class="empty-state">No open purchase orders found.</div>';return;}
   const html=groups.map(([poId,ls])=>{
     const first=ls[0];
-    const curr=getCurrency(first.supplier);
     const totalV=ls.reduce((s,l)=>s+l.lineValue,0);
     const totalQ=ls.reduce((s,l)=>s+l.qtyOutstanding,0);
     const minDays=ls.reduce((m,l)=>l.daysToEta!==null?Math.min(m,l.daysToEta):m,9999);
@@ -246,7 +237,7 @@ function render(groups,totalLines){
           </div>
         </div>
         <div class="pl-right">
-          <div class="pl-value">${fmtNum(l.lineValue,curr)}</div>
+          <div class="pl-value">${fmtR(l.lineValue)}</div>
           <div class="pl-qty">${Math.round(l.qtyOutstanding).toLocaleString()} cases</div>
         </div>
       </div>`).join('');
@@ -258,7 +249,7 @@ function render(groups,totalLines){
           <div class="po-eta-row"><span class="po-eta">📅 ${etaStr}</span><span class="po-days ${daysClass}">${daysLabel}</span></div>
         </div>
         <div class="po-right">
-          <div class="po-value">${fmtNum(totalV,curr)}</div>
+          <div class="po-value">${fmtR(totalV)}</div>
           <div class="po-qty">${Math.round(totalQ).toLocaleString()} cases</div>
           <div class="po-expand" id="arrow_${uid}">▾ tap to expand</div>
         </div>
